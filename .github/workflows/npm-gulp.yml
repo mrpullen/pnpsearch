@@ -94,3 +94,4 @@ jobs:
           prerelease: ${{ startsWith(github.ref_name, 'release') }}
           tag: ${{ needs.build.outputs.majorMinorPatch }}
           commit: ${{ github.ref_name }} 
+          token: ${{ github.token }}
