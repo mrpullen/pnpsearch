@@ -14,3 +14,65 @@ build.rig.getTasks = function () {
 };
 
 build.initialize(require('gulp'));
+
+const findFilesByExt = (base, ext, files, result) => {
+}
+
+gulp.task('update-version', async () => {
+
+    // List all manifest files
+    const manifestFiles = findFilesByExt('./src', 'manifest.json');
+
+    const semver = require('semver')
+    const versionArgIdx = process.argv.indexOf('--value');
+    const newVersionNumber = semver.valid(process.argv[versionArgIdx + 1]);
+
+    if (versionArgIdx !== -1 && newVersionNumber) {
+
+        // Update version in the package-solution
+        const pkgSolutionFilePath = './config/package-solution.json';
+
+        readJson(pkgSolutionFilePath, (err, pkgSolution) => {
+            log.info('Old package-solution.json version:\t' + pkgSolution.solution.version);
+            const pkgVersion = `${semver.major(newVersionNumber)}.${semver.minor(newVersionNumber)}.${semver.patch(newVersionNumber)}.0`;
+            pkgSolution.solution.version = pkgVersion
+            log.info('New package-solution.json version:\t' + pkgVersion);
+            fs.writeFile(pkgSolutionFilePath, JSON.stringify(pkgSolution, null, 4), (error) => { });
+        });
+
+        // Updated version in Web Part manifests
+        manifestFiles.forEach((manifestFile) => {
+            readJson(`./${manifestFile}`, (err, manifest) => {
+
+                log.info(`Updating manifest file: "./${manifestFile}"`);
+
+                log.info('Old manifestFile version:\t' + manifest.version);
+                const wpVersion = `${semver.major(newVersionNumber)}.${semver.minor(newVersionNumber)}.${semver.patch(newVersionNumber)}`;
+                manifest.version = wpVersion;
+                log.info('New manifestFile version:\t' + wpVersion);
+                fs.writeFile(manifestFile, JSON.stringify(manifest, null, 4), (error) => { });
+            });
+        });
+    } else {
+        log.error(`The provided version ${process.argv[versionArgIdx + 1]} is not a valid SemVer version`);
+    }
+});
+
+gulp.task('update-package-name', async () => {
+
+    const pkgSolutionFilePath = './config/package-solution.json';
+
+    const fileNameArg = process.argv.indexOf('--name');
+    const fileName = process.argv[fileNameArg + 1];
+
+    if (fileNameArg !== -1 && fileName) {
+        readJson(pkgSolutionFilePath, (err, pkgSolution) => {
+            const currentPackageName = path.basename(pkgSolution.paths.zippedPackage, '.sppkg');
+            log.info(`Rename ${currentPackageName}.sppkg to ${fileName}.sppkg`);
+            pkgSolution.paths.zippedPackage = pkgSolution.paths.zippedPackage.replace(path.basename(pkgSolution.paths.zippedPackage, '.sppkg'), fileName);
+            fs.writeFile(pkgSolutionFilePath, JSON.stringify(pkgSolution, null, 4), (error) => { });
+        });
+    } else {
+        log.error(`Error: wrong parameters`);
+    }
+});
