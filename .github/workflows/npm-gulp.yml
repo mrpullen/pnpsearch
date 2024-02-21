@@ -13,17 +13,83 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+    outputs: 
+      majorMinorPatch: ${{ steps.setoutputs.outputs.majorMinorPatch }}
+      semver: ${{ steps.setoutputs.outputs.semver }}
 
     steps:
     - uses: actions/checkout@v3
-
+    
+    - name: Setup GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-
-    - name: Build
+        
+    - name: Determine Version
+      id:   gitversion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+    
+    - name: Set outputs
+      id: setoutputs
+      run: |
+        echo "::set-output name=majorMinorPatch::$GITVERSION_MAJORMINORPATCH"
+        echo "::set-output name=semver::$GITVERSION_SEMVER"
+    
+    - name: Build SPFx
       run: |
         npm install
+        gulp update-version --value $GITVERSION_MAJORMINORPATCH
+        gulp update-package-name --name pnp-modern-search-parts-$GITVERSION_SEMVER
         gulp bundle --ship
         gulp package-solution --ship
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: search-extensions-${{ steps.gitversion.outputs.semVer }}
+        path: ${{ github.workspace }}/**/*.sppkg
+  
+  release:
+    runs-on: ubuntu-latest
+    environment: production
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release') || github.event.inputs.create_release }}
+    needs: build
+    steps:
+      
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - uses: actions/download-artifact@v3
+        with:
+          name: search-extensions-${{ needs.build.outputs.semver }}
+    
+      - name: Create GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          name: search-extensions - ${{ needs.build.outputs.semVer }}
+          artifacts: ${{ github.workspace }}/**/*.sppkg
+          bodyFile: ".github/workflows/release-template.md"
+          draft: true
+          generateReleaseNotes: true
+          allowUpdates: true
+          replacesArtifacts: true
+          prerelease: ${{ startsWith(github.ref_name, 'release') }}
+          tag: ${{ needs.build.outputs.majorMinorPatch }}
+          commit: ${{ github.ref_name }} 
+      
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+          
+      - name: Deploy documentation
+        run: |
+          pip install markdown-include
+          pip install mkdocs-material==7.2.4
+          mkdocs gh-deploy --force
