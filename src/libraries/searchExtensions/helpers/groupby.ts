@@ -1,3 +1,6 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import get from 'get-value';
 
 
@@ -13,7 +16,7 @@ function noop() {
  * @return {Object} Handlebars instance.
  */
 export default function groupBy(handlebars:typeof Handlebars): typeof Handlebars {
-	let helpers = {
+	const helpers = {
 		/**
 		 * @method group
 		 * @param {Array} list
