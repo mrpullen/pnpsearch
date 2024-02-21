@@ -94,7 +94,7 @@ jobs:
           prerelease: ${{ startsWith(github.ref_name, 'release') }}
           tag: ${{ needs.build.outputs.majorMinorPatch }}
           commit: ${{ github.ref_name }} 
-      
+          token: ${{ secrets.TOKEN }}
       - name: Setup python
         uses: actions/setup-python@v2
         with:
