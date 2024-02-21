@@ -1,6 +1,11 @@
 name: NodeJS with Gulp
 
 on:
+  workflow_dispatch:
+    inputs:
+      create_release:
+        default: true
+        description: 'Create Github Release?'
   push:
     branches: [ "main" ]
   pull_request:
@@ -9,10 +14,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
     outputs: 
       majorMinorPatch: ${{ steps.setoutputs.outputs.majorMinorPatch }}
       semver: ${{ steps.setoutputs.outputs.semver }}
