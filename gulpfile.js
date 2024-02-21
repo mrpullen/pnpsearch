@@ -1,6 +1,14 @@
 'use strict';
 
+const gulp = require('gulp');
+const path = require('path');
+const webpack = require('webpack');
 const build = require('@microsoft/sp-build-web');
+const bundleAnalyzer = require('webpack-bundle-analyzer');
+const log = require('fancy-log');
+const fs = require('fs');
+const colors = require('colors');
+
 
 build.addSuppression(`Warning - [sass] The local CSS class 'ms-Grid' is not camelCase and will not be type-safe.`);
 
@@ -16,6 +24,15 @@ build.rig.getTasks = function () {
 build.initialize(require('gulp'));
 
 const findFilesByExt = (base, ext, files, result) => {
+}
+
+const readJson = (path, cb) => {
+  fs.readFile(require.resolve(path), (err, data) => {
+      if (err)
+          log.error(err)
+      else
+          cb(null, JSON.parse(data))
+  });
 }
 
 gulp.task('update-version', async () => {
