@@ -53,8 +53,7 @@ const readJson = (path, cb) => {
 gulp.task('update-version', async () => {
 
   // List all manifest files
-  const manifestFiles = findFilesByExt('./src', 'manifest.json');
-
+ 
   const semver = require('semver')
   const versionArgIdx = process.argv.indexOf('--value');
   const newVersionNumber = semver.valid(process.argv[versionArgIdx + 1]);
@@ -72,19 +71,7 @@ gulp.task('update-version', async () => {
           fs.writeFile(pkgSolutionFilePath, JSON.stringify(pkgSolution, null, 4), (error) => { });
       });
 
-      // Updated version in Web Part manifests
-      manifestFiles.forEach((manifestFile) => {
-          readJson(`./${manifestFile}`, (err, manifest) => {
-
-              log.info(`Updating manifest file: "./${manifestFile}"`);
-
-              log.info('Old manifestFile version:\t' + manifest.version);
-              const wpVersion = `${semver.major(newVersionNumber)}.${semver.minor(newVersionNumber)}.${semver.patch(newVersionNumber)}`;
-              manifest.version = wpVersion;
-              log.info('New manifestFile version:\t' + wpVersion);
-              fs.writeFile(manifestFile, JSON.stringify(manifest, null, 4), (error) => { });
-          });
-      });
+    
   } else {
       log.error(`The provided version ${process.argv[versionArgIdx + 1]} is not a valid SemVer version`);
   }
