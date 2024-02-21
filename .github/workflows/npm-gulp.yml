@@ -84,7 +84,7 @@ jobs:
       - name: Create GitHub release
         uses: ncipollo/release-action@v1.14.0
         with:
-          name: search-extensions - ${{ needs.build.outputs.semVer }}
+          name: search-extensions-${{ needs.build.outputs.semVer }}
           artifacts: ${{ github.workspace }}/**/*.sppkg
           bodyFile: ".github/workflows/release-template.md"
           draft: true
