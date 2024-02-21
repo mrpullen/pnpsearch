@@ -27,6 +27,11 @@ jobs:
       with:
         fetch-depth: 0
     
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2.2.2
+      with:
+        version: 7
+      
     - name: Setup GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.7
       with:
@@ -49,7 +54,7 @@ jobs:
     
     - name: Build SPFx
       run: |
-        npm install
+        pnpm install
         gulp update-version --value $GITVERSION_MAJORMINORPATCH
         gulp update-package-name --name pnp-modern-search-parts-$GITVERSION_SEMVER
         gulp bundle --ship
