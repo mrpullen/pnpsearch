@@ -94,14 +94,3 @@ jobs:
           prerelease: ${{ startsWith(github.ref_name, 'release') }}
           tag: ${{ needs.build.outputs.majorMinorPatch }}
           commit: ${{ github.ref_name }} 
-          token: ${{ secrets.TOKEN }}
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-          
-      - name: Deploy documentation
-        run: |
-          pip install markdown-include
-          pip install mkdocs-material==7.2.4
-          mkdocs gh-deploy --force
