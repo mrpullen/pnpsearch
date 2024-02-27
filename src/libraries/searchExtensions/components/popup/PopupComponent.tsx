@@ -29,7 +29,7 @@ export interface IModalComponentProps {
     /**
      * The Modal header text to display
      */
-    ModalHeaderText?: string;
+    modalHeaderText?: string;
 
     /**
      * The content to render in the Modal
@@ -383,8 +383,8 @@ export class PopupWebComponent extends BaseWebComponent {
         const htmlContent: Document = domParser.parseFromString(this.innerHTML, 'text/html');
 
         // Get the templates
-        const openTemplate = htmlContent.getElementById('Modal-open');
-        const contentTemplate = htmlContent.getElementById('Modal-content');
+        const openTemplate = htmlContent.getElementById('modal-open');
+        const contentTemplate = htmlContent.getElementById('modal-content');
 
         let contentTemplateContent = null;
         let openTemplateContent = null;

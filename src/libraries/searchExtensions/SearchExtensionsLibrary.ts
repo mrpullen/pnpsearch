@@ -9,7 +9,7 @@ export class SearchExtensionsLibrary implements IExtensibilityLibrary  {
   getCustomWebComponents(): IComponentDefinition<unknown>[] {
     return [
       {
-        "componentName": "pnp-popup",
+        "componentName": "ext-popup",
         "componentClass": PopupWebComponent
       }
     ];
