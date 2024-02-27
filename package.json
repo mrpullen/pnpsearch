@@ -15,6 +15,7 @@
     "@pnp/modern-search-extensibility": "^1.18.2",
     "get-value": "^3.0.1",
     "handlebars-group-by": "^1.0.1",
+    "office-ui-fabric-react": "^7.204.0",
     "tslib": "2.3.1"
   },
   "devDependencies": {
