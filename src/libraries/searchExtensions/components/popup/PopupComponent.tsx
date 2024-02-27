@@ -48,29 +48,38 @@ export class PopupComponent extends React.Component<IPopupComponentProps, IPopup
         //Handle Errors of properties
 
         const domParser = new DOMParser();
+        if(this.props.template) {
         const htmlContent: Document = domParser.parseFromString(this.props.template.trim(), 'text/html');
 
         //Get Click HTML from template and pull out just the Click HTML based on template element with id equal to "popupclick"
         let _clickElement: HTMLElement = htmlContent.getElementById("popupclick");
-        let _clickHTML = (_clickElement && !isEmpty(_clickElement.innerHTML)) ? _clickElement.innerHTML.trim() : "";
-        if (isEmpty(_clickHTML)){
-            _errorsClick.push('Template element with ID equal to "popupclick" not found.');
+        let _clickHTML = "";
+        if(_clickElement) {
+            _clickHTML = (_clickElement && !isEmpty(_clickElement.innerHTML)) ? _clickElement.innerHTML.trim() : "";
+            if (isEmpty(_clickHTML)){
+                _errorsClick.push('Template element with ID equal to "popupclick" not found.');
+            }
         }
 
         //Get Header HTML from template and pull out just the Header HTML based on template element with id equal to "popupheader"
         let _headerElement: HTMLElement = htmlContent.getElementById("popupheader");
-        let _headerHTML = (_headerElement && !isEmpty(_headerElement.innerHTML)) ? _headerElement.innerHTML.trim() : "";
-        if (isEmpty(_headerHTML)){
-            _errorsHeader.push('Template element with ID equal to "popupheader" not found.');
+        let _headerHTML = "";
+        if(_headerElement) {
+            _headerHTML = (_headerElement && !isEmpty(_headerElement.innerHTML)) ? _headerElement.innerHTML.trim() : "";
+            if (isEmpty(_headerHTML)){
+                _errorsHeader.push('Template element with ID equal to "popupheader" not found.');
+            }
         }
 
         //Get Body HTML from template and pull out just the Body HTML based on template element with id equal to "popupbody"
         let _bodyElement: HTMLElement = htmlContent.getElementById("popupbody");
-        let _bodyHTML = (_bodyElement && !isEmpty(_bodyElement.innerHTML)) ? _bodyElement.innerHTML.trim() : "";
-        if (isEmpty(_bodyHTML)){
-            _errorsBody.push('Template element with ID equal to "popupbody" not found.');
-        }        
-
+        let _bodyHTML = "";
+        if(_bodyElement) {
+            _bodyHTML = (_bodyElement && !isEmpty(_bodyElement.innerHTML)) ? _bodyElement.innerHTML.trim() : "";
+            if (isEmpty(_bodyHTML)){
+                _errorsBody.push('Template element with ID equal to "popupbody" not found.');
+            }        
+        }
         const ErrorMsgBar = (inMessage: string[]) => (
             !isEmpty(inMessage) ?
                 <MessageBar
@@ -121,6 +130,8 @@ export class PopupComponent extends React.Component<IPopupComponentProps, IPopup
                         </div>
                     </Modal>
                 </div>;
+        }
+        return (<div></div>);
     }
 
     private _showModal = (id: string): void => {
