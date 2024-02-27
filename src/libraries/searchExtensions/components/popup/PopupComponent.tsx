@@ -52,7 +52,7 @@ export class PopupComponent extends React.Component<IPopupComponentProps, IPopup
         const htmlContent: Document = domParser.parseFromString(this.props.template.trim(), 'text/html');
 
         //Get Click HTML from template and pull out just the Click HTML based on template element with id equal to "popupclick"
-        let _clickElement: HTMLElement = htmlContent.getElementById("popupclick");
+        let _clickElement: HTMLElement|undefined = htmlContent.getElementById("popupclick");
         let _clickHTML = "";
         if(_clickElement) {
             _clickHTML = (_clickElement && !isEmpty(_clickElement.innerHTML)) ? _clickElement.innerHTML.trim() : "";
@@ -62,7 +62,7 @@ export class PopupComponent extends React.Component<IPopupComponentProps, IPopup
         }
 
         //Get Header HTML from template and pull out just the Header HTML based on template element with id equal to "popupheader"
-        let _headerElement: HTMLElement = htmlContent.getElementById("popupheader");
+        let _headerElement: HTMLElement|undefined = htmlContent.getElementById("popupheader");
         let _headerHTML = "";
         if(_headerElement) {
             _headerHTML = (_headerElement && !isEmpty(_headerElement.innerHTML)) ? _headerElement.innerHTML.trim() : "";
@@ -72,7 +72,7 @@ export class PopupComponent extends React.Component<IPopupComponentProps, IPopup
         }
 
         //Get Body HTML from template and pull out just the Body HTML based on template element with id equal to "popupbody"
-        let _bodyElement: HTMLElement = htmlContent.getElementById("popupbody");
+        let _bodyElement: HTMLElement|undefined = htmlContent.getElementById("popupbody");
         let _bodyHTML = "";
         if(_bodyElement) {
             _bodyHTML = (_bodyElement && !isEmpty(_bodyElement.innerHTML)) ? _bodyElement.innerHTML.trim() : "";
