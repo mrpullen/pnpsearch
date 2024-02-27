@@ -151,9 +151,9 @@ export class PopupWebComponent extends BaseWebComponent {
         }
 
         props.template = this._template;
-
+        
         // You can use this._ctx here to access current Web Part context
-        const popupItem = <PopupComponent {...props} ctx={this._ctx} />;
+        const popupItem = <PopupComponent ctx={new WebPartContext} {...props} />;
         ReactDOM.render(popupItem, this);
     }
 }
