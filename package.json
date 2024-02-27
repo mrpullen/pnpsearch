@@ -43,25 +43,25 @@
   },
   "pnpm": {
     "overrides": {
-        "@xmldom/xmldom": "0.8.4",
-        "validator": "13.7.0",
-        "loader-utils": "2.0.4",
-        "node-fetch": "2.6.7",
-        "autolinker": "3.14.0",
-        "tar": "4.4.18",
-        "glob-parent": "5.1.2",
-        "highlight.js": "10.4.1",
-        "decode-uri-component": "0.2.2",
-        "json5": "2.2.2",
-        "set-value": "4.0.1",
-        "unset-value": "2.0.1",
-        "@microsoft/mgt-react": "^3.1.3",
-        "@microsoft/mgt-sharepoint-provider": "^3.1.3",
-        "@microsoft/mgt-components": "^3.1.3",
-        "@microsoft/mgt-element": "^3.1.3",
-        "@microsoft/mgt-spfx": "^3.1.3",
-        "remarkable" : "2.0.1",
-        "uglify-js" : ">3.15.5"
+      "@xmldom/xmldom": "0.8.4",
+      "validator": "13.7.0",
+      "loader-utils": "2.0.4",
+      "node-fetch": "2.6.7",
+      "autolinker": "3.14.0",
+      "tar": "4.4.18",
+      "glob-parent": "5.1.2",
+      "highlight.js": "10.4.1",
+      "decode-uri-component": "0.2.2",
+      "json5": "2.2.2",
+      "set-value": "4.0.1",
+      "unset-value": "2.0.1",
+      "@microsoft/mgt-react": "^3.1.3",
+      "@microsoft/mgt-sharepoint-provider": "^3.1.3",
+      "@microsoft/mgt-components": "^3.1.3",
+      "@microsoft/mgt-element": "^3.1.3",
+      "@microsoft/mgt-spfx": "^3.1.3",
+      "remarkable": "2.0.1",
+      "uglify-js": ">3.15.5"
     }
-}
+  }
 }
