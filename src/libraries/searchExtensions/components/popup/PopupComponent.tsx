@@ -1,7 +1,8 @@
+/* eslint-disable @microsoft/spfx/pair-react-dom-render-unmount */
 import * as React from 'react';
 import { BaseWebComponent, IDataFilterInfo, ExtensibilityConstants } from '@pnp/modern-search-extensibility';
 import * as ReactDOM from 'react-dom';
-import { Modal, IModalProps, Text, ITheme,FontWeights, mergeStyleSets } from '@fluentui/react';
+import { Modal, IModalProps, Text, ITheme,FontWeights, mergeStyleSets, IconButton, IButtonStyles, IIconProps } from '@fluentui/react';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import { Log } from "@microsoft/sp-core-library";
 import * as DOMPurify from 'dompurify';
@@ -20,6 +21,14 @@ export interface IModalComponentProps {
      * This Modal is non-modal: even when it's open, it allows interacting with content outside the Modal.
      */
     isBlocking?: boolean;
+
+    /**
+     * 
+     * Number of Columns - based on 12 column layout
+     * 
+     */
+
+    numColumns?: number;
 
     /**
      * This Modal uses "light dismiss" behavior: it can be closed by clicking or tapping the area outside the Modal (or using the close button as usual).
@@ -72,7 +81,7 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
      * The client storage instance
      */
     private clientStorage: PnPClientStorage;
-    private ModalComponentUniqueKey: string = "PnPSearch:PopUpComponent";
+    private modalComponentUniqueKey: string = "PnPSearch:PopUpComponent";
 
     constructor(props: IModalComponentProps) {
         super(props);
@@ -91,26 +100,19 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
         this.clientStorage = new PnPClientStorage();
 
         if (props.stateKey) {
-            this.ModalComponentUniqueKey = `${this.ModalComponentUniqueKey}:${props.stateKey}`;
+            this.modalComponentUniqueKey = `${this.modalComponentUniqueKey}:${props.stateKey}`;
         }
     }
 
     public render(): JSX.Element {
-
-        const modalProps: IModalProps = {
-            theme: this.props.themeVariant as ITheme,
-            isOpen: this.state.showModal,
-            isBlocking: this.props.isBlocking,
-            isModeless: false,
-            onDismiss: this._onCloseModal,
-            
-        };
+        const columnWidth = this.props.numColumns ? this.props.numColumns : 2;
         const theme = this.props.themeVariant as ITheme;
         const contentStyles = mergeStyleSets({
             container: {
               display: 'flex',
               flexFlow: 'column nowrap',
               alignItems: 'stretch',
+              width: `${columnWidth * 8.33}%`
             },
             header: [
               theme.fonts.xLargePlus,
@@ -142,8 +144,32 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
             },
             
           });
+        const iconButtonStyles: Partial<IButtonStyles> = {
+            root: {
+              color: theme.palette.neutralPrimary,
+              marginLeft: 'auto',
+              marginTop: '4px',
+              marginRight: '2px',
+            },
+            rootHovered: {
+              color: theme.palette.neutralDark,
+            },
+          };
+        
+          const cancelIcon: IIconProps = { iconName: 'Cancel' };
 
-        // Avoid Modal animation flickering when the control is re-rerendered after a filter is selected
+
+        const modalProps: IModalProps = {
+            theme: this.props.themeVariant as ITheme,
+            isOpen: this.state.showModal,
+            isBlocking: this.props.isBlocking,
+            isModeless: false,
+            containerClassName: contentStyles.container,
+            onDismiss: this._onCloseModal
+            
+        };
+
+        // Avoid modal animation flickering when the control is re-rerendered after a filter is selected
         if (this.props.disableAnimation) {
             modalProps.styles = {
                 main: {
@@ -169,7 +195,13 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
             </Text>
             <Modal {...modalProps}>
                 <div className={contentStyles.header}>
-                    {this.props.ModalHeaderText}
+                    <h2 className={contentStyles.header}>{this.props.modalHeaderText}</h2>
+                    <IconButton
+            styles={iconButtonStyles}
+            iconProps={cancelIcon}
+            ariaLabel="Close popup modal"
+            onClick={this._onToggleModal}
+          />
                 </div>
                 <div className={contentStyles.body} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(this.props.contentTemplate as string) }}>
                 </div>
@@ -185,7 +217,7 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
         } else {
 
             // Get expand state if any
-            const isOpen = this.clientStorage.session.get(this.ModalComponentUniqueKey);
+            const isOpen = this.clientStorage.session.get(this.modalComponentUniqueKey);
 
             if (isOpen !== null) {
                 this.setState({ showModal: isOpen });
@@ -194,7 +226,7 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
 
         // Reset the state when the page is refreshed or the window location is updated
         window.onbeforeunload = () => {
-            this.clientStorage.session.delete(this.ModalComponentUniqueKey);
+            this.clientStorage.session.delete(this.modalComponentUniqueKey);
         };
 
         this._bindEvents();
@@ -214,15 +246,15 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
     private _onCloseModal():void {
         this.setState({ showModal: false });
 
-        // Save the Modal open state
-        this.clientStorage.session.put(this.ModalComponentUniqueKey, false);
+        // Save the modal open state
+        this.clientStorage.session.put(this.modalComponentUniqueKey, false);
     }
 
     private _onToggleModal():void {
         this.setState({ showModal: !this.state.showModal });
 
         // Save the Modal open state
-        this.clientStorage.session.put(this.ModalComponentUniqueKey, !this.state.showModal);
+        this.clientStorage.session.put(this.modalComponentUniqueKey, !this.state.showModal);
     }
 
     /**
@@ -375,10 +407,12 @@ export class PopupWebComponent extends BaseWebComponent {
 
     public constructor() {
         super();
+        
     }
 
     public async connectedCallback():Promise<void> {
-
+        console.log(`${ModalComponent_LogSource} - Connected Callback `);
+        try {
         const domParser = new DOMParser();
         const htmlContent: Document = domParser.parseFromString(this.innerHTML, 'text/html');
 
@@ -386,8 +420,8 @@ export class PopupWebComponent extends BaseWebComponent {
         const openTemplate = htmlContent.getElementById('modal-open');
         const contentTemplate = htmlContent.getElementById('modal-content');
 
-        let contentTemplateContent = null;
-        let openTemplateContent = null;
+        let contentTemplateContent:string = '';
+        let openTemplateContent:string = '';
 
         if (contentTemplate) {
             contentTemplateContent = contentTemplate.innerHTML;
@@ -398,8 +432,13 @@ export class PopupWebComponent extends BaseWebComponent {
         }
 
         const props = this.resolveAttributes();
-        const fileIcon = <ModalComponent {...props} contentTemplate={contentTemplateContent as string} openTemplate={openTemplateContent as string} />;
-        ReactDOM.render(fileIcon, this);
+        const modalComponent = <ModalComponent {...props} contentTemplate={contentTemplateContent as string} openTemplate={openTemplateContent as string} />;
+        ReactDOM.render(modalComponent, this);
+        }
+        catch(err) {
+            Log.error(ModalComponent_LogSource, err);
+            ReactDOM.render(<div>Error</div>, this);
+        }
     }
 
     protected onDispose(): void {
