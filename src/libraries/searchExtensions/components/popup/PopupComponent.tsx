@@ -195,7 +195,7 @@ export class ModalComponent extends React.Component<IModalComponentProps, IModal
             </Text>
             <Modal {...modalProps}>
                 <div className={contentStyles.header}>
-                    <h2 className={contentStyles.header}>{this.props.modalHeaderText}</h2>
+                    <h2 className={contentStyles.heading}>{this.props.modalHeaderText}</h2>
                     <IconButton
             styles={iconButtonStyles}
             iconProps={cancelIcon}
