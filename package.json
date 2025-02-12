@@ -12,16 +12,17 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "get-value": "^3.0.1",
-    "handlebars-group-by": "^1.0.1",
     "@fluentui/react": "^8.115.6",
     "@microsoft/sp-component-base": "^1.18.2",
     "@microsoft/sp-core-library": "^1.18.2",
     "@pnp/common": "^2.15.0",
-    "@pnp/modern-search-extensibility": "^1.18.2",
+    "@pnp/modern-search-extensibility": "^1.20.1",
     "dompurify": "^3.0.9",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "get-value": "^3.0.1",
+    "handlebars-group-by": "^1.0.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-iframe": "^1.8.5",
     "tslib": "2.3.1"
   },
   "devDependencies": {
